@@ -1,5 +1,5 @@
 __pycache__/
 __pycache__/*
-penv/
-.penv
-.penv/
+env/
+.env
+.env/
