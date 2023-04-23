@@ -1,0 +1,62 @@
+{
+  "status": "in-game",
+  "room_name": "OPGJ2RH8RHI3T6MP7BZX2N4KPZADJD",
+  "total_players": 2,
+  "players": ["admin","admin2"],
+  "cards": [
+        [42,75,25,44,23,63,60,50,34,86],
+        [62,52,81,74,79,29,90,71,87,47]
+    ],
+  "turn": 2,
+  "points": [
+    0,
+    0
+  ]
+}
+
+
+{
+    "status": "in-game",
+    "room_name": "VENCLOG40IZ5WFO4U2PP2DGFH3IJUO",
+    "total_players": 2,
+    "players": [
+        {
+            "index": 0,
+            "username": "admin",
+            "cards": [
+                68,
+                88,
+                81,
+                22,
+                69,
+                32,
+                37,
+                61,
+                15,
+                71
+            ],
+            "myTurn": true,
+            "points": 0,
+            "cardPlaced": -1
+        },
+        {
+            "index": 1,
+            "username": "admin2",
+            "cards": [
+                93,
+                57,
+                86,
+                40,
+                45,
+                35,
+                30,
+                52,
+                96,
+                64
+            ],
+            "myTurn": false,
+            "points": 0,
+            "cardPlaced": -1
+        }
+    ]
+}

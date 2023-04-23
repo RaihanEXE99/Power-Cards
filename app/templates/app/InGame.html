@@ -1,0 +1,235 @@
+<!-- Hello Gamer
+{{room_name}}<br>
+{{userlist}}<br>
+{{request.user}} -->
+<div id="board">
+    <div>
+        <span id="whosTurn"></span>
+    </div>
+    <ui id="dashboard">
+
+    </ui>
+    <div id="cardPlaced" style="display: flex;"></div>
+    <div id="myCards"></div>
+</div>
+
+<script>
+    const room_name ="{{room_name}}";
+    const capacity = "{{capacity}}";
+    const socket = new WebSocket(
+        'ws://' +
+        window.location.host +
+        '/ws/InGame/' +
+        room_name +
+        '/'
+    )
+    // Receive from backend
+    socket.onmessage = function(event) {
+        var data = JSON.parse(event.data);
+        if(data.type=="init"){
+            alert(data.type);
+            dashboard(data);
+            init(data);
+        }
+        if(data.type=="play"){
+            dashboard(data);
+            onplay(data);
+        }
+        if(data.type=="bothPlaced"){
+            document.getElementById('cardPlaced').setAttribute("style","background:yellow;"); 
+            bothPlaced(data);
+            setTimeout(function() {
+                dashboard(data);
+                document.getElementById('cardPlaced').setAttribute("style","background:white;");
+                document.getElementById('cardPlaced').innerHTML=""; 
+                const cardPlaced = document.querySelector('#cardPlaced');
+                totalCards = data.cardPlaced.length;
+                for (let i = 0; i < totalCards; i++) {
+                    const button = document.createElement('h3');
+                    button.setAttribute("id", `cardp-${i}`);
+                    button.textContent = `X`;
+                    cardPlaced.appendChild(button);
+                }
+                document.getElementById('myCards').innerHTML="";
+                createCardINIT(data);
+            }, 5000);  
+        }
+        if(data.type=="finished"){
+            finished(data);
+        }
+    };
+
+    // socket.addEventListener('message', function(event) {
+    //     const message = JSON.parse(event.data);
+    //     alert(message['text'])
+    // // process the message, e.g. add it to the chat history
+    // })
+function init(data){
+    document.querySelector("#whosTurn").innerHTML=data.whosTurn;
+    createCardINIT(data);
+    cardPlacedINIT(data);
+}
+// Create Cards (INIT)
+function finished(data){
+    document.getElementById('board').innerHTML="";
+    const board = document.querySelector('#board');
+    document.createElement('ui').setAttribute("id","dashboard");
+    const dashboard = document.querySelector('#dashboard');
+    total = data.dashboard.length;
+    for (let i = 0; i < total; i++) {
+        const li = document.createElement('li');
+        li.setAttribute("id", `user-${data.dashboard[i].username}`);
+        li.textContent = data.dashboard[i].username+":->"+data.dashboard[i].points;
+        board.appendChild(li);
+    }
+}
+function dashboard(data){
+    document.querySelector("#dashboard").innerHTML="";
+    const dashboard = document.querySelector('#dashboard');
+    total = data.dashboard.length;
+    for (let i = 0; i < total; i++) {
+        const li = document.createElement('li');
+        li.setAttribute("id", `user-${data.dashboard[i].username}`);
+        li.textContent = data.dashboard[i].username+":->"+data.dashboard[i].points;
+        dashboard.appendChild(li);
+    }
+}
+function createCardINIT(data){
+    const myCardsDiv = document.querySelector('#myCards');
+    totalCards = data.myCards.length;
+    if(data.myTurn=="False"){
+        myCardsDiv.setAttribute("style", `background:red;`);
+        for (let i = 0; i < totalCards; i++) {
+        const button = document.createElement('button');
+        button.disabled = true;
+        button.setAttribute("id", `card-${i}`);
+        button.setAttribute("sv", `${i}`);
+        button.textContent = `Card Power ${data.myCards[i]}`;
+        button.addEventListener('click', () => {
+            console.log(`Button ${i + 1} was clicked`);
+        });
+            myCardsDiv.appendChild(button);
+        }
+    }else if(data.myTurn=="True"){
+        myCardsDiv.setAttribute("style", `background:green;`);
+        for (let i = 0; i < totalCards; i++) {
+        const button = document.createElement('button');
+        button.setAttribute("id", `card-${i}`);
+        button.setAttribute("sv", `${i}`);
+        button.textContent = `Card Power ${data.myCards[i]}`;
+        button.addEventListener('click', () => {
+            console.log(`Button ${i + 1} was clicked`);
+        });
+            myCardsDiv.appendChild(button);
+        }
+    }
+}
+function cardPlacedINIT(data){
+    const cardPlaced = document.querySelector('#cardPlaced');
+    totalCards = data.cardPlaced.length;
+    for (let i = 0; i < totalCards; i++) {
+        const button = document.createElement('h3');
+        button.setAttribute("id", `cardp-${i}`);
+        if(data.cardPlaced[i]!=-1){
+            button.textContent = `Card Power ${data.cardPlaced[i]}`;
+        }
+        else{
+            button.textContent = `X`;
+        }
+        button.addEventListener('click', () => {
+            console.log(`Button ${i + 1} was clicked`);
+        });
+        cardPlaced.appendChild(button);
+    }
+}
+function allCardDisabled(data){
+    const myCardsDiv = document.querySelector('#myCards');
+    totalCards = data.myCards.length;
+    myCardsDiv.setAttribute("style", `background:red;`);
+    for (let i = 0; i < totalCards; i++) {
+    const button = document.createElement('button');
+    button.disabled = true;
+    button.setAttribute("id", `card-${i}`);
+    button.setAttribute("sv", `${i}`);
+    button.textContent = `Card Power ${data.myCards[i]}`;
+    button.addEventListener('click', () => {
+        console.log(`Button ${i + 1} was clicked`);
+    });
+        myCardsDiv.appendChild(button);
+    }
+}
+function onplay(data){
+    document.querySelector("#whosTurn").innerHTML=data.whosTurn;
+    document.getElementById('cardPlaced').innerHTML=""; 
+    document.getElementById('myCards').innerHTML=""; 
+    createCardINIT(data);
+    cardPlacedINIT(data);
+}
+function bothPlaced(data){
+    document.querySelector("#whosTurn").innerHTML=data.whosTurn;
+    document.getElementById('cardPlaced').innerHTML=""; 
+    document.getElementById('myCards').innerHTML=""; 
+    allCardDisabled(data);
+    cardPlacedINIT(data);
+}
+const myCards = document.getElementById('myCards');
+    myCards.addEventListener('click', function(event) {
+        if (event.target.tagName === 'BUTTON') {
+            socket.send(JSON.stringify({
+                'type':'sv',
+                'sv': event.target.getAttribute("sv")
+            }));
+        }
+    });
+
+    socket.onclose = function(event) {
+        console.error('WebSocket closed unexpectedly');
+    };
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // socket.onopen = function(event) {
+    //     console.log('WebSocket connection established');
+    //     socket.send(JSON.stringify({
+    //         'message': 'Hello, server!'
+    //     }));
+    // };
+    // socket.onmessage = function(event) {
+    //     alert(event.data);
+    // };
+
+    // function leave(){
+    //     socket.send(JSON.stringify({
+    //         'room_name': room_name,
+    //         'active_counter': parseInt("{{active_counter}}")-1,
+    //     }))
+    //     location.href = "/games/leave/"+room_name;
+    // }
+
+    // socket.onopen =()=>{
+    //     socket.send(JSON.stringify({
+    //         'room_name': room_name,
+    //         'active_counter': '{{active_counter}}',
+    //     }))
+    // }
+    // function complete(){
+    //     location.href = "/games/startingGame/"+room_name;
+    // }
+    // socket.onmessage = function (e) {
+    //     const data = JSON.parse(e.data);
+    //     document.querySelector('#active_counter').innerHTML = data.active_counter;
+    //     if (parseInt(data.active_counter)==capacity){
+    //         complete();
+    //     }
+    // }
+</script>
