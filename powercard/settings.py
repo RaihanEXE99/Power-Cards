@@ -82,17 +82,17 @@ WSGI_APPLICATION = 'powercard.wsgi.application'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 # MYSQL
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 # Render DB(live)
-DATABASES = {
-    'default': dj_database_url.parse('postgres://powercard_user:L5AytoSxhYqo9CdZtHfd66UczvPwdmmg@dpg-ch2gvk3h4hsum46iatig-a.singapore-postgres.render.com/powercard')
-}
+# DATABASES = {
+#     'default': dj_database_url.parse('postgres://powercard_user:L5AytoSxhYqo9CdZtHfd66UczvPwdmmg@dpg-ch2gvk3h4hsum46iatig-a.singapore-postgres.render.com/powercard')
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
