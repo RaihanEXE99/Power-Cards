@@ -55,6 +55,9 @@ class ReqForROOM(LoginRequiredMixin,View):
             else:
                 return HttpResponse("Room is full")
         else:
+            alreadyINGame = Lobby.objects.filter(users_m=request.user.id)
+            if alreadyINGame:
+                return redirect("app:InGame",room_name=alreadyINGame[0].room_name)
             me = request.user
             createRoom = Lobby.objects.create(
                 room_name=self.roomGEN(),

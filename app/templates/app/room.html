@@ -2,6 +2,19 @@
 {% load static %}
 
 {% block style %}
+<style>
+    .ml4 {
+    position: relative;
+    font-weight: 900;
+    }
+    .ml4 .letters {
+    /* position: absolute; */
+    margin: auto;
+    left: 0;
+    right: 0;
+    opacity: 0; 
+    }
+</style>
 {% endblock %}
 
 {% block body%}
@@ -10,7 +23,7 @@
         <!--begin::User menu-->
         <div style="width: 90%;" class="card my-15 w-lg-75">
             <!--begin::Body-->
-            <div class="card-body pt-15 px-0 ">
+            <div class="card-body pt-15 px-0 " id="lottie-background" >
                 <!--begin::Member-->
                 <div class="d-flex flex-column text-center mb-9 px-9 ">
                     <!--begin::Photo-->
@@ -33,7 +46,7 @@
                                 <i class="path2"></i>
                                 <i class="path3"></i>
                             </i>
-                            Capacity 
+                            <span>Capacity</span>
                             <i class="ki-duotone ki-triangle fs-1">
                                 <i class="path1"></i>
                                 <i class="path2"></i>
@@ -48,26 +61,47 @@
                         </span>
                     </div>
                     <!--end::Info--> 
-                    
-                    <span id="kt_typedjs_example_1" class="fs-1 fw-bold"></span>
+                    <div class="d-flex justify-content-center mt-4">
+                        <div class="mb-0 lh-1">
+                            <span class="badge badge-success badge-circle w-10px h-10px me-1 pulse pulse-secondary">
+                                <span class="pulse-ring"></span>
+                            </span>
+                            <span class="fs-7 fw-semibold text-muted" id="active_counter">0</span>
+                            <span class="fs-7 fw-semibold text-muted">Player is in the lobby</span>
+                        </div>
+                    </div>
                 </div>
-                <!--end::Member-->
 
-                       
+                <!--end::Member-->
             </div>
             <!--end::Body-->
+            <!--begin::Underline-->
+            <span class="d-flex position-relative">
+                <!--begin::Line-->
+                <span class="d-inline-block position-absolute h-8px bottom-0 end-0 start-0 bg-secondary translate rounded"></span>
+                <!--end::Line-->
+            </span>
+            <!--end::Underline-->
         </div>
         <!--end::User menu-->
     </div>
     <!--end::Start sidebar-->
 
-    {% block script %}
+{% endblock %}
 
+{% block script %}
     <script>
         const room_name ="{{room_name}}";
         const capacity = "{{capacity}}";
+        var wsorwss = "";
+        if (window.location.protocol=="http:"){
+            wsorwss="ws://"
+        }else{
+            wsorwss="wss://"
+        }
+        // alert(wsorwss+window.location.host +'/ws/InGame/' +room_name +'/')
         const chatSocket = new WebSocket(
-            'ws://' +
+            wsorwss +
             window.location.host +
             '/ws/room/' +
             room_name +
@@ -99,6 +133,4 @@
             }
         }
     </script>
-    {% endblock %}
-
 {% endblock %}

@@ -1,0 +1,51 @@
+
+
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block style %}
+{% endblock %}
+
+{% block body%}
+    <!--begin::Start sidebar-->
+    <div class="d-flex justify-content-center"  >
+        <!--begin::User menu-->
+        <div style="width: 90%;" class="card my-15 w-lg-75">
+            <!--begin::Body-->
+            <div class="card-body pt-15 px-0 ">
+                <!--begin::Member-->
+                <div class="d-flex flex-column text-center mb-9 px-9 ">
+                    <!--begin::Photo-->
+                    <div class="d-flex justify-content-center">
+                        <lottie-player src="https://assets7.lottiefiles.com/private_files/lf30_3nvqj06a.json"  background="transparent"  speed="1"  style="width: 300px; height: 300px;"   autoplay></lottie-player>
+                    </div>
+                    <!--end::Photo-->
+
+                    <!--begin::Info-->
+                    <form method="post" action="/accounts/google/login/" class="text-center">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-light-warning">
+                            <i class="ki-duotone ki-google fs-1">
+                            <i class="path1"></i>
+                            <i class="path2"></i>
+                            </i>
+                            Connect With Google
+                        </button>
+                    </form>
+                    <!--end::Info--> 
+
+                </div>
+                <!--end::Member-->
+                       
+            </div>
+            <!--end::Body-->
+        </div>
+        <!--end::User menu-->
+    </div>
+    <!--end::Start sidebar-->
+
+    {% block script %}
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    {% endblock %}
+
+{% endblock %}

@@ -18,10 +18,13 @@ from django.urls import path,include
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from app.views import *
 from django.contrib.auth import views as auth_views
+from django.views.generic import TemplateView
+from allauth.account.views import LoginView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
     path('accounts/', include('allauth.urls')),
+    path('accounts/google-social-login/', TemplateView.as_view(template_name='accounts/socialaccount/google_login.html')),
     path('accounts/', include('accounts.urls')),
     path('', HomeView.as_view(), name='HomeView'),
     path('games/', include('app.urls'))

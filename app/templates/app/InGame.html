@@ -16,8 +16,14 @@
 <script>
     const room_name ="{{room_name}}";
     const capacity = "{{capacity}}";
+    if (window.location.protocol=="http:"){
+            wsorwss="ws://"
+        }else{
+            wsorwss="wss://"
+    }
+    // alert(wsorwss+window.location.host +'/ws/InGame/' +room_name +'/')
     const socket = new WebSocket(
-        'ws://' +
+        wsorwss +
         window.location.host +
         '/ws/InGame/' +
         room_name +

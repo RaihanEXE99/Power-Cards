@@ -171,3 +171,5 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+LOGIN_URL="/accounts/google-social-login/"
