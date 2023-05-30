@@ -8,7 +8,6 @@ from channels.db import database_sync_to_async
 from .models import Lobby
 
 
-
 class WaitingLobbyConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
@@ -73,6 +72,17 @@ class InGameConsumer(AsyncWebsocketConsumer):
         for player in players:
             if player["username"]==user.username:
                 return player
+    # async def playerPoints(self):
+    #     user = self.scope['user']
+    #     exist = await sync_to_async(Lobby.objects.filter(users_m=user,room_name=self.room_name).first)()
+    #     players = exist.gameJson["players"]
+    #     points = []
+    #     for player in players:
+    #         points.append({
+    #             "username":player["username"],
+    #             "points":player["points"]
+    #         })
+    #     return points
                 
 
     async def connect(self):
@@ -91,12 +101,12 @@ class InGameConsumer(AsyncWebsocketConsumer):
             
             dashboard = []
             for player in obj.gameJson["players"]:
-                dashboard.append({"pid":player["pid"],"username":player["username"],"points":player["points"]})
+                dashboard.append({"username":player["username"],"points":player["points"]})
             await self.send(json.dumps({
                 "type":"init" if obj.status!="finished" else obj.status,
                 "whosTurn":whosTurn,
                 "myCards":me["cards"],
-                "cardPlaced":hShowher(obj),
+                "cardPlaced":obj.gameJson["cardPlaced"],
                 "myTurn":["True" if me["myTurn"] else "False"],
                 "points":me["points"],
                 "dashboard":dashboard
@@ -104,9 +114,6 @@ class InGameConsumer(AsyncWebsocketConsumer):
         else:pass
 
     async def disconnect(self, close_code):
-        await self.send(text_data='disconnected')
-        print("XSD"*100)
-        print(self.scope['user'])
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
@@ -139,12 +146,14 @@ class InGameConsumer(AsyncWebsocketConsumer):
                 self.room_group_name,
                 {
                     'type': 'lobbyUpdate',
+                    # 'message': 'Hello, world!'
                 }
             )
         else:
             print("Failed-recive-sv")
 
     async def lobbyUpdate(self, event):       
+        # message = event["message"]
         user = self.scope['user']
         obj = await sync_to_async(Lobby.objects.filter(users_m=user,room_name=self.room_name).first)()
         isBothPlaced =True if -1 not in obj.gameJson["cardPlaced"] else False
@@ -162,7 +171,7 @@ class InGameConsumer(AsyncWebsocketConsumer):
                 await sync_to_async(obj.save,thread_sensitive=True)()
             dashboard = []
             for player in obj.gameJson["players"]:
-                dashboard.append({"pid":player["pid"],"username":player["username"],"points":player["points"]})
+                dashboard.append({"username":player["username"],"points":player["points"]})
             await self.send(json.dumps({
                 "type":"bothPlaced" if obj.status!="finished" else obj.status,
                 "whosTurn":whosTurn,
@@ -193,40 +202,29 @@ class InGameConsumer(AsyncWebsocketConsumer):
         else:
             dashboard = []
             for player in obj.gameJson["players"]:
-                dashboard.append({"pid":player["pid"],"username":player["username"],"points":player["points"]})
-            myINDEX=obj.gameJson["cardPlaced"].index(max(obj.gameJson["cardPlaced"]))
-            # cplcd = []
-            # for i in range(obj.gameJson["total_players"]):
-            #     if i==myINDEX:
-            #         cplcd.append("H")
-            #     elif i!=myINDEX and obj.gameJson["cardPlaced"][i]==-1:
-            #         cplcd.append(-1)
-            #     else:
-            #         cplcd.append("H")
+                dashboard.append({"username":player["username"],"points":player["points"]})
             await self.send(json.dumps({
                 "type":"play" if obj.status!="finished" else obj.status,
                 "whosTurn":whosTurn,
                 "myCards":me["cards"],
-                # "cardPlaced":obj.gameJson["cardPlaced"],
-                "cardPlaced":hShowher(obj),
+                "cardPlaced":obj.gameJson["cardPlaced"],
                 "myTurn":["True" if me["myTurn"] else "False"],
                 "dashboard":dashboard
             }))
-    
-    async def heartbeat(self):
-        while True:
-            # Perform idle timeout check here
-            # If no messages are received from the client within the specified interval,
-            # consider the user as idle and take necessary actions
-
-            await asyncio.sleep(60) 
     pass
 
-def hShowher(obj):
-    cplcd = []
-    for i in range(obj.gameJson["total_players"]):
-        if obj.gameJson["cardPlaced"][i]==-1:
-            cplcd.append(-1)
-        else:
-            cplcd.append("H")
-    return cplcd
+
+
+
+    # Iterate SELF
+    # for key, value in vars(self).items():
+    #     print(f"{key}: {value}")
+
+
+    # # @database_sync_to_async
+    # def save_data_to_database(self, data):
+    #     # Perform database operation
+    #     user = self.scope['user']
+    #     print(user)
+    #     # obj = Lobby.objects.get(name=data['name'], value=data['value'])
+    #     # return {'id': obj.id, 'name': obj.name, 'value': obj.value}

@@ -89,13 +89,28 @@
     
 </div>
 <div id="board">
-    <!-- <span id="whosTurn"></span> -->
+    
 
-    <div id="cardPlaced" class="d-flex justify-content-center mt-10">
 
+
+    <!--  -->
+    <div>
+        <span id="whosTurn"></span>
+    </div>
+    <ui id="dashboard">
+
+    </ui>
+    <!-- <div id="cardPlaced" style="display: flex;"></div> -->
+    <!--  -->
+    <div id="cardPlaced" class="d-flex justify-content-center">
+        <!-- <button class="p-10 btn bg-black rounded border border-warning text-center">
+            <div class="d-flex justify-content-center align-items-center fw-bold">
+                <i style="font-size: 10rem;" class="fas fa-bolt text-warning"></i>
+            </div>
+        </button> -->
     </div>
     <!--begin::User menu-->
-    <div class="d-flex justify-content-center ">
+    <div class="d-flex justify-content-center">
         <div class="w-100 my-15">
             <div id="myCards" class=" bg-gray-100 btn container">
                 <!-- websocket -->
@@ -125,7 +140,10 @@
         room_name +
         '/'
     )
-
+    // setInterval(function() {
+    //     socket.send('heartbeat');
+    // }, 500);
+    // Receive from backend
     socket.onmessage = function(event) {
         var data = JSON.parse(event.data);
         if(data.type=="init"){
@@ -160,6 +178,35 @@
                 }
                 document.getElementById('myCards').innerHTML="";
                 createCardINIT(data);
+                // document.getElementById('cardPlaced').innerHTML=""; 
+                // const cardPlaced = document.querySelector('#cardPlaced');
+                // totalCards = data.cardPlaced.length;
+                // for (let i = 0; i < totalCards; i++) {
+                //     const button = document.createElement('button');
+                //     button.setAttribute("id", `cardp-${i}`);
+                //     if(data.cardPlaced[i]!=-1){
+                //         button.setAttribute("class","mx-5 p-15 btn bg-black rounded border border-warning text-center")
+                //         // button.textContent = `Card Power ${data.cardPlaced[i]}`;
+                //         button.innerHTML=`
+                //         <div class="d-flex justify-content-center align-items-center fw-bold">
+                //             <span style="font-size: 5rem;" class="fas text-warning">💥</span>
+                //         </div>
+                //         `;
+                //     }
+                //     else{
+                //         button.setAttribute("class","mx-5 p-10 btn bg-black rounded border border-warning text-center")
+                //         button.innerHTML = `
+                //         <div class="d-flex justify-content-center align-items-center fw-bold">
+                //             <i style="font-size: 5rem;" class="text-warning">💥</i>
+                //         </div>
+                //         `;
+                //     }
+                //     button.addEventListener('click', () => {
+                //         console.log(`Button ${i + 1} was clicked`);
+                //     });
+                //     cardPlaced.appendChild(button);
+                // }
+                
             }, 5000);  
         }
         if(data.type=="finished"){
@@ -168,7 +215,7 @@
     };
 
 function init(data){
-    // document.querySelector("#whosTurn").innerHTML=data.whosTurn;
+    document.querySelector("#whosTurn").innerHTML=data.whosTurn;
     createCardINIT(data);
     cardPlacedINIT(data);
 }
@@ -186,9 +233,20 @@ function finished(data){
         board.appendChild(li);
     }
 }
-
+// function dashboard(data){
+//     document.querySelector("#dashboard").innerHTML="";
+//     const dashboard = document.querySelector('#dashboard');
+//     total = data.dashboard.length;
+//     for (let i = 0; i < total; i++) {
+//         const li = document.createElement('li');
+//         li.setAttribute("id", `user-${data.dashboard[i].username}`);
+//         li.textContent = data.dashboard[i].username+":->"+data.dashboard[i].points;
+//         dashboard.appendChild(li);
+//     }
+// }
 function dashboard(data){
     total = data.dashboard.length;
+    console.log(data.dashboard)
     for (let i = 0; i < total; i++) {
         document.querySelector(`#pid-${data.dashboard[i].pid}`).innerHTML=data.dashboard[i].points;
     }
@@ -214,7 +272,11 @@ function createCardINIT(data){
                 <span class="m-4 fs-1 text-warning">${data.myCards[i]}</span>
             </div>
         `
- 
+
+        // button.textContent = `Card Power ${data.myCards[i]}`;
+        button.addEventListener('click', () => {
+            console.log(`Button ${i + 1} was clicked`);
+        });
             myCardsDiv.appendChild(button);
         }
     }else if(data.myTurn=="True"){
@@ -235,6 +297,10 @@ function createCardINIT(data){
             </div>
         `
 
+        // button.textContent = `Card Power ${data.myCards[i]}`;
+        button.addEventListener('click', () => {
+            console.log(`Button ${i + 1} was clicked`);
+        });
             myCardsDiv.appendChild(button);
         }
     }
@@ -263,7 +329,9 @@ function cardPlacedINIT(data){
             </div>
             `;
         }
-
+        button.addEventListener('click', () => {
+            console.log(`Button ${i + 1} was clicked`);
+        });
         cardPlaced.appendChild(button);
     }
 }
@@ -288,18 +356,22 @@ function allCardDisabled(data){
         </div>
     `
 
+    // button.textContent = `Card Power ${data.myCards[i]}`;
+    button.addEventListener('click', () => {
+        console.log(`Button ${i + 1} was clicked`);
+    });
         myCardsDiv.appendChild(button);
     }
 }
 function onplay(data){
-    // document.querySelector("#whosTurn").innerHTML=data.whosTurn;
+    document.querySelector("#whosTurn").innerHTML=data.whosTurn;
     document.getElementById('cardPlaced').innerHTML=""; 
     document.getElementById('myCards').innerHTML=""; 
     createCardINIT(data);
     cardPlacedINIT(data);
 }
 function bothPlaced(data){
-    // document.querySelector("#whosTurn").innerHTML=data.whosTurn;
+    document.querySelector("#whosTurn").innerHTML=data.whosTurn;
     document.getElementById('cardPlaced').innerHTML=""; 
     document.getElementById('myCards').innerHTML=""; 
     allCardDisabled(data);
@@ -311,7 +383,9 @@ function showBothcardPlacedINIT(data){
     for (let i = 0; i < totalCards; i++) {
         const button = document.createElement('button');
         button.setAttribute("id", `cardp-${i}`);
+        // if(data.cardPlaced[i]!=-1){
             button.setAttribute("class","puff-in-center mx-5 p-15 btn bg-black rounded border border-warning text-center")
+            // button.textContent = `Card Power ${data.cardPlaced[i]}`;
             button.innerHTML=`
             <img class="m-1 p-1 rounded" style="width: 100%;" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/${data.cardPlaced[i]}.gif">
             <div class="d-flex justify-content-center align-items-center fw-bold">
@@ -319,13 +393,28 @@ function showBothcardPlacedINIT(data){
                 <span class="m-4 fs-1 text-warning">${data.cardPlaced[i]}</span>
             </div>
             `;
-
+        // }
+        // else{
+            
+        //     button.setAttribute("class","slide-in-fwd-top mx-5 p-10 btn bg-black rounded border border-warning text-center")
+        //     button.innerHTML = `
+        //     <img class="m-1 p-1 rounded" style="width: 100%;" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/${data.cardPlaced[i]}.gif">
+        //     <div class="d-flex justify-content-center align-items-center fw-bold">
+        //         <i class="fas fa-bolt text-warning fs-1"></i>
+        //         <span class="m-4 fs-1 text-warning">${data.cardPlaced[i]}</span>
+        //     </div>
+        //     `;
+        // }
+        button.addEventListener('click', () => {
+            console.log(`Button ${i + 1} was clicked`);
+        });
         cardPlaced.appendChild(button);
     }
 }
 const myCards = document.getElementById('myCards');
     myCards.addEventListener('click', function(event) {
         if (event.target.tagName === 'BUTTON' && event.target.hasAttribute('sv')) {
+            console.log(event.target.hasAttribute('sv'))
             socket.send(JSON.stringify({
                 'type':'sv',
                 'sv': event.target.getAttribute("sv")

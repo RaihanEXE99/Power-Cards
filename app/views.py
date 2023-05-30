@@ -9,7 +9,7 @@ from django.views import View
 from django.utils.decorators import method_decorator
 from django.db.models import Q
 
-
+from allauth.socialaccount.models import SocialAccount
 ERROR = JsonResponse({
     "RES" : "ERROR"
 })
@@ -55,7 +55,7 @@ class ReqForROOM(LoginRequiredMixin,View):
             else:
                 return HttpResponse("Room is full")
         else:
-            alreadyINGame = Lobby.objects.filter(users_m=request.user.id)
+            alreadyINGame = Lobby.objects.filter(users_m=request.user.id).exclude(status="finished")
             if alreadyINGame:
                 return redirect("app:InGame",room_name=alreadyINGame[0].room_name)
             me = request.user
@@ -85,12 +85,13 @@ class WaitingRoom(LoginRequiredMixin,View):
 
 class StartingGame(LoginRequiredMixin,View): 
     def initiateGame(self,lobby):
-        def randomCardList(n):return [random.randint(0, 100) for _ in range(n)]
+        def randomCardList(n):return [random.randint(1, 100) for _ in range(n)]
         playersUsername=[user.username for user in lobby.users_m.all()]
         players = []
         count = 0
         for username in playersUsername:
             players.append({
+                "pid":User.objects.get(username=username).id,
                 "index":count,
                 "username":username,
                 "cards":randomCardList(10),
@@ -136,6 +137,7 @@ class StartingGame(LoginRequiredMixin,View):
                 return JsonResponse({
                     'room_name' : room_name,
                     'userlist' : userlist,
+                    'social_accounts':userListToSocialAccounts(userlist)
                 })
             else:
                 ERROR
@@ -146,10 +148,17 @@ class InGame(LoginRequiredMixin, View):
     def get(self, request, room_name, *args, **kwargs):
         exist = get_object_or_404(Lobby, room_name=room_name,status__in=["started","finished"],gameJson__status__in=["in-game", "finished"])
         userlist = [user.username for user in exist.users_m.all()]
+        # 
+        # 
         return render(request,'app/InGame.html',{
             'room_name' : room_name,
             'userlist' : userlist,
+            'social_accounts':userListToSocialAccounts(userlist)
         })
+
+def userListToSocialAccounts(userlist):
+    social_users = User.objects.filter(username__in=userlist)
+    return SocialAccount.objects.filter(user__in=social_users)
 
 class LeaveRoomView(LoginRequiredMixin, View):
     def get(self, request, room_name, *args, **kwargs):

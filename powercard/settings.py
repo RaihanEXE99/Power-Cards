@@ -173,3 +173,4 @@ AUTHENTICATION_BACKENDS = [
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 LOGIN_URL="/accounts/google-social-login/"
+# SOCIALACCOUNT_ADAPTER = 'powercard.allauth_adapter.CustomSocialAccountAdapter'
